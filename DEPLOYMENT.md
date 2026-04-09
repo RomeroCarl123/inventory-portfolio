@@ -15,18 +15,36 @@ Deploy the `server` folder as a Node service.
 Use values from `server/.env.example`:
 
 - `PORT=5000` (or platform default)
-- `MONGO_URI=...`
+- `MONGO_URI=mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/inventory?retryWrites=true&w=majority`
 - `JWT_SECRET=...`
 - `DEMO_USERNAME=demo`
 - `DEMO_PASSWORD=demo123`
 - `FRONTEND_URL=https://<your-netlify-site>.netlify.app`
 - `NETLIFY_URL=https://<your-netlify-site>.netlify.app` (optional)
 
+> Important: include a database name in the URI path (example: `/inventory`) so Mongoose knows where to store your collections.
+
 After deploy, copy backend URL, e.g.:
 `https://your-api.onrender.com`
 
 Health check endpoint:
 `https://your-api.onrender.com/api/health`
+
+Local backend check:
+
+```bash
+npm --prefix server run dev
+```
+
+You should see a successful connection log like `MongoDB connected`.
+
+If you want to run with Node directly from the project root, use:
+
+```bash
+node server/server.js
+```
+
+(`node server.js` only works if your terminal is inside the `server` folder.)
 
 ---
 
@@ -58,3 +76,16 @@ Then trigger deploy.
 4. If requests fail, verify:
    - backend URL in `VITE_API_BASE_URL`
    - backend `FRONTEND_URL` matches Netlify domain
+
+## 4) Quick troubleshooting
+
+- **Error: `Cannot find module .../server.js`**
+  - You ran `node server.js` from the root folder.
+  - Use `node server/server.js` from root, or `cd server && node server.js`.
+
+- **Error: invalid MongoDB scheme**
+  - Ensure `MONGO_URI` starts with `mongodb://` or `mongodb+srv://`.
+
+- **No DB connection yet**
+  - The backend now falls back to demo mode and still starts.
+  - Set a valid `MONGO_URI` to persist data in MongoDB.

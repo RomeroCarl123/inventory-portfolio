@@ -46,12 +46,21 @@ const ensureDemoUser = async () => {
 };
 
 mongoose
-  .connect(process.env.MONGO_URI)
+  .connect(
+    process.env.MONGO_URI?.startsWith("mongodb://") ||
+      process.env.MONGO_URI?.startsWith("mongodb+srv://")
+      ? process.env.MONGO_URI
+      : undefined,
+  )
   .then(async () => {
     console.log("MongoDB connected");
     await ensureDemoUser();
   })
-  .catch((err) => console.log(err));
+  .catch(() => {
+    console.warn(
+      "MongoDB not connected. Set a valid MONGO_URI (mongodb:// or mongodb+srv://). Running in demo fallback mode.",
+    );
+  });
 
 app.use("/api/products", productRoutes);
 app.use("/api/auth", authRoutes);
