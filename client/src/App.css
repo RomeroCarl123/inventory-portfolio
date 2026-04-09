@@ -1,0 +1,29 @@
+.app-shell {
+  max-width: 980px;
+  margin: 32px auto;
+  padding: 0 16px 24px;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 32px;
+  color: #0f172a;
+}
+
+.app-shell .card {
+  margin-bottom: 16px;
+}
+
+@media (max-width: 700px) {
+  .app-header {
+    flex-direction: column;
+  }
+}
