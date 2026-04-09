@@ -40,8 +40,16 @@ const ensureDemoUser = async () => {
 
   const existing = await User.findOne({ username: demoUsername });
   if (!existing) {
-    await User.create({ username: demoUsername, password: demoPassword });
-    console.log(`Demo user created: ${demoUsername}`);
+    try {
+      await User.create({ username: demoUsername, password: demoPassword });
+      console.log(`Demo user created: ${demoUsername}`);
+    } catch (err) {
+      if (err?.code === 11000) {
+        // Another process/restart created it first
+        return;
+      }
+      throw err;
+    }
   }
 };
 
@@ -54,11 +62,19 @@ mongoose
   )
   .then(async () => {
     console.log("MongoDB connected");
-    await ensureDemoUser();
+    try {
+      await ensureDemoUser();
+    } catch (err) {
+      console.warn(
+        "MongoDB connected, but demo user setup failed:",
+        err?.message,
+      );
+    }
   })
-  .catch(() => {
+  .catch((err) => {
     console.warn(
-      "MongoDB not connected. Set a valid MONGO_URI (mongodb:// or mongodb+srv://). Running in demo fallback mode.",
+      "MongoDB not connected. Set a valid MONGO_URI (mongodb:// or mongodb+srv://). Running in demo fallback mode:",
+      err?.message,
     );
   });
 
